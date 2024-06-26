@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Volume</title>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="innerWrap">
+            <img src="volume-none.png" id="volumeImg">
+            <div class="volume-bar">
+                <div class="volume-bar-active"></div>
+            </div>
+        </div>
+        <div>
+            <span>Volume : </span>
+            <span id="volValue">0</span>
+        </div>
+        <div>
+            <button id="hitButton">HIT</button>
+        </div>
+    </div>
+</body>
+<script>
+    var volValue = 0;
+    var amen = new Audio('amen.wav');
+    amen.volume = 0;
+    amen.loop = true;
+    
+    document.querySelector("#hitButton").addEventListener("click", function(){
+        volValue = volValue + 5;
+        if(volValue >= 100) volValue = 100;
+
+        setVolume();
+    });
+    setInterval(function(){
+        if(volValue <= 0) return;
+        volValue = volValue - 1;
+
+        setVolume();
+    }, 30);
+
+    function setVolume(){
+        document.querySelector("#volValue").textContent = volValue;
+        amen.volume = volValue / 100;
+        document.querySelector(".volume-bar-active").style.width = volValue + "%";
+
+        if(volValue <= 0){
+            document.querySelector("#volumeImg").src = "volume-none.png";
+        } else if(volValue > 0 && volValue <= 30){
+            document.querySelector("#volumeImg").src = "volume-low.png";
+        } else if(volValue > 30 && volValue <= 60){
+            document.querySelector("#volumeImg").src = "volume-mid.png";
+        } else if(volValue > 60 && volValue <= 99){
+            document.querySelector("#volumeImg").src = "volume-high.png";
+        } else if(volValue >= 100){
+            document.querySelector("#volumeImg").src = "volume-full.png";
+        }
+    }
+
+    window.onload = function(){
+        amen.play();
+    }
+</script>
+<style>
+    .innerWrap {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: inherit;
+    }
+    #volumeImg {
+        width : 20px;
+        margin-right: 5px;
+    }
+    .volume-bar {
+        position: relative;
+        width: 100%;
+        height: 15px; 
+        background-color: #ddd;
+    }
+    .volume-bar::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .volume-bar-active {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background-color: #0e94ff;
+    }
+    #hitButton {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+</html>
