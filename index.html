@@ -32,22 +32,32 @@
         <div>
             <button id="hitButton">HIT</button>
         </div>
+        <div>
+            <input type="file" accept="audio/*" id="audioFile">
+        </div>
     </div>
 </body>
 <script>
     var volValue = 0;
-    var amen = new Audio('amen.wav');
+    var music = new Audio('amen.wav');
     var playing = false;
     var clicks = 0;
     var elapsedTime = 0;
     var start = false;
-    amen.volume = 0;
-    amen.loop = true;
+    music.volume = 0;
+    music.loop = true;
+
+    // 음악 변경
+    document.querySelector("#audioFile").addEventListener("change", function(){
+        music = new Audio(URL.createObjectURL(document.querySelector("#audioFile").files[0]));
+        music.pause();
+        music.currentTime = 0;
+    });
     
     // HIT 버튼 클릭 이벤트
     document.querySelector("#hitButton").addEventListener("click", function(){
         volValue = volValue + 5;
-        if(!playing) amen.play();
+        if(!playing) music.play();
         setVolume();
 
         // 엔터 키 누르고 있으면 연타 적용되므로 포커스 해제.
@@ -96,7 +106,7 @@
         document.querySelector("#volValue").textContent = volValue;
 
         // 볼륨 세팅
-        amen.volume = volValue / 100;
+        music.volume = volValue / 100;
 
         // 볼륨 아이콘 변경
         if(volValue <= 0){
