@@ -18,6 +18,18 @@
             <span id="volValue">0</span>
         </div>
         <div>
+            <span>Clicks : </span>
+            <span id="clicks">0</span>
+        </div>
+        <div>
+            <span>Speed : </span>
+            <span id="cps">0</span><span> Clicks / Sec.</span>
+        </div>
+        <div>
+            <span>Elapsed Time : </span>
+            <span id="elapsedTime">0</span><span> Seconds</span>
+        </div>
+        <div>
             <button id="hitButton">HIT</button>
         </div>
     </div>
@@ -26,16 +38,39 @@
     var volValue = 0;
     var amen = new Audio('amen.wav');
     var playing = false;
+    var clicks = 0;
+    var elapsedTime = 0;
+    var start = false;
     amen.volume = 0;
     amen.loop = true;
     
+    // HIT 버튼 클릭 이벤트
     document.querySelector("#hitButton").addEventListener("click", function(){
         volValue = volValue + 5;
-        if(volValue >= 100) volValue = 100;
         if(!playing) amen.play();
-
         setVolume();
+
+        // 엔터 키 누르고 있으면 연타 적용되므로 포커스 해제.
+        // document.querySelector("#hitButton").blur();
+        
+        start = true;
+        document.querySelector("#clicks").textContent = clicks++;
     });
+
+    // 초당 클릭 속도 구하기
+    setInterval(function(){
+        if(start){
+            elapsedTime = (((elapsedTime*100) + 1)/100).toFixed(2);
+
+            document.querySelector("#elapsedTime").textContent = Math.floor(elapsedTime);
+
+            if(elapsedTime > 1){
+                document.querySelector("#cps").textContent = (clicks / elapsedTime).toFixed(2);
+            }
+        }
+    }, 10);
+
+    // 30ms마다 볼륨 줄이기
     setInterval(function(){
         if(volValue <= 0) return;
         volValue = volValue - 1;
@@ -43,11 +78,27 @@
         setVolume();
     }, 30);
 
+    // 볼륨 세팅
     function setVolume(){
-        document.querySelector("#volValue").textContent = volValue;
-        amen.volume = volValue / 100;
-        document.querySelector(".volume-bar-active").style.width = volValue + "%";
+        var volumeBarWidth = volValue;
 
+        // 볼륨이 100 넘지 않도록
+        if(volValue >= 100) {
+            // Transition 0.2초에 의해 100%일 시 볼륨바가 꽉 차지 않으므로 100퍼센트일 경우 10퍼센트 더함
+            volumeBarWidth = 110;
+            volValue = 100;
+        }
+
+        // 볼륨바 채우기
+        document.querySelector(".volume-bar-active").style.width = volumeBarWidth + "%";
+
+        // 볼륨 텍스트 띄우기        
+        document.querySelector("#volValue").textContent = volValue;
+
+        // 볼륨 세팅
+        amen.volume = volValue / 100;
+
+        // 볼륨 아이콘 변경
         if(volValue <= 0){
             document.querySelector("#volumeImg").src = "volume-none.png";
         } else if(volValue > 0 && volValue <= 30){
@@ -58,6 +109,7 @@
             document.querySelector("#volumeImg").src = "volume-high.png";
         } else if(volValue >= 100){
             document.querySelector("#volumeImg").src = "volume-full.png";
+            
         }
     }
 </script>
@@ -72,12 +124,14 @@
     #volumeImg {
         width : 20px;
         margin-right: 5px;
+        transition: all 0.5s;
     }
     .volume-bar {
         position: relative;
         width: 100%;
         height: 15px; 
         background-color: #ddd;
+        overflow-x: hidden;
     }
     .volume-bar::after {
         content: '';
@@ -94,6 +148,7 @@
         left: 0;
         height: 100%;
         background-color: #0e94ff;
+        transition: all 0.1s;
     }
     #hitButton {
         width: 100%;
