@@ -25,12 +25,14 @@
 <script>
     var volValue = 0;
     var amen = new Audio('amen.wav');
+    var playing = false;
     amen.volume = 0;
     amen.loop = true;
     
     document.querySelector("#hitButton").addEventListener("click", function(){
         volValue = volValue + 5;
         if(volValue >= 100) volValue = 100;
+        if(!playing) amen.play();
 
         setVolume();
     });
@@ -57,10 +59,6 @@
         } else if(volValue >= 100){
             document.querySelector("#volumeImg").src = "volume-full.png";
         }
-    }
-
-    window.onload = function(){
-        amen.play();
     }
 </script>
 <style>
